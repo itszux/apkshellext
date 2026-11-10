@@ -1400,7 +1400,7 @@ namespace ApkQuickReader
                 Bitmap b = null, f = null;
                 Bitmap bmp = new Bitmap(size.Width, size.Height);
                 Graphics g = Graphics.FromImage(bmp);
-                if (elem.HasAttribute("drawable")) {
+                if (elem != null && elem.HasAttribute("drawable")) {
                     b = getImage(elem.GetAttribute("drawable"), size);
                     if (b != null)
                         g.DrawImage(b, 0, 0);
@@ -1410,7 +1410,7 @@ namespace ApkQuickReader
                     }
                 }
                 elem = (XmlElement)node.SelectSingleNode("/adaptive-icon/foreground");
-                if (elem.HasAttribute("drawable")) {
+                if (elem != null && elem.HasAttribute("drawable")) {
                     f = getImage(elem.GetAttribute("drawable"), size);
                     if (f != null)
                         g.DrawImage(f, 0, 0);
@@ -1952,10 +1952,10 @@ namespace ApkQuickReader
             int best = 0;
             if (getFlag("Density") != null) {
                 int bestDensity = 0;
-                bool supAI = Utility.GetSetting("SupportAdaptiveIcon", "False") == "True";
+                bool supAI = Utility.GetSetting("SupportAdaptiveIcon", "True") == "True";
                 for (int i = 0; i < r.configs.Count; i++) {
                     if (!supAI) {
-                        if (r.values[i].ToString().EndsWith(".xml")) break;
+                        if (r.values[i].ToString().EndsWith(".xml")) continue;
                     }
                     byte[] bytes = r.configs[i];
                     int density = bytes[(int)ResourceConfig.Density + 1] * 256 + bytes[(int)ResourceConfig.Density];

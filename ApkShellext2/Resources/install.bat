@@ -39,16 +39,16 @@ if '%errorlevel%' NEQ '0' (
     CD /D "%~dp0"
 :--------------------------------------
 
-REM SYSTEMINFO | FIND /i "x64-based pc"
-echo %PROCESSOR_IDENTIFIER% | FIND /i "x86"
-
-set FRAMEWORK=%windir%\Microsoft.NET\Framework
-set DOTNETVERSION=v4.0.30319
-IF %ERRORLEVEL%==1 (
-  set FRAMEWORK=%FRAMEWORK%64
-)
-set REGASM="%FRAMEWORK%\%DOTNETVERSION%\regasm.exe"
+REM Register with the 64-bit regasm on 64-bit Windows (Explorer is 64-bit).
+REM The old script clobbered ERRORLEVEL with the `set` commands, so it always
+REM used the 32-bit regasm and 64-bit Explorer never saw the handler.
+set REGASM="%windir%\Microsoft.NET\Framework64\v4.0.30319\regasm.exe"
+if not exist %REGASM% set REGASM="%windir%\Microsoft.NET\Framework\v4.0.30319\regasm.exe"
 %REGASM% /codebase "%~dp0\apkshellext2.dll"
+
+ECHO Restarting Explorer to refresh icons...
+TASKKILL /F /IM explorer.exe >nul 2>&1
+START "" %WINDIR%\explorer.exe
 
 ECHO Done!
 ECHO.
